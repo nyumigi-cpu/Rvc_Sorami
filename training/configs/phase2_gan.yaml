@@ -1,0 +1,45 @@
+# Phase 2: 코덱 + VC GAN 학습
+# 목표: Phase 1 체크포인트에서 이어받아 GAN 학습으로 고품질 합성
+# 손실: Mel + Adversarial + Feature Matching + Content + Pitch
+
+model:
+  sample_rate: 24000
+  content_dim: 64
+  timbre_dim: 128
+  hidden_channels: 256
+  n_targets: 1
+  use_pitch: true
+
+data:
+  # AudioDataset (단일 화자 타겟 또는 다중 화자)
+  root: "./data/target_female"
+  segment_seconds: 2.0
+  augment: true
+  extract_pitch: false
+  num_workers: 4
+
+loss:
+  lambda_mel: 45.0
+  lambda_adv: 1.0
+  lambda_fm: 2.0
+  lambda_content: 2.0
+  lambda_timbre: 0.5
+  lambda_pitch: 0.5
+
+train:
+  batch_size: 16
+  lr_g: 2.0e-4
+  lr_d: 2.0e-4
+  max_steps: 400000
+  warmup_steps: 2000
+  log_every: 100
+  ckpt_every: 5000
+  eval_every: 2000
+  # D:G 업데이트 비율 (D가 너무 강하면 조절)
+  d_update_freq: 1
+
+paths:
+  pretrained_ckpt: "./runs/phase1/best.pt"
+  output_dir: "./runs/phase2"
+
+seed: 42

@@ -1,0 +1,39 @@
+# Phase 1: Teacher 증류
+# 목표: Teacher 모델(Seed-VC / Takin-VC)로 생성한 (source, target) 쌍을 학습
+# 간단한 재구성 손실로 파이프라인 워밍업 + 타겟 음색 임베딩 학습
+
+model:
+  sample_rate: 24000
+  content_dim: 64
+  timbre_dim: 128
+  hidden_channels: 256
+  n_targets: 1
+  use_pitch: true
+
+data:
+  # ParallelAudioDataset 사용
+  manifest: "./data/parallel_manifest.json"
+  segment_seconds: 2.0
+  augment: true
+  num_workers: 4
+
+loss:
+  lambda_mel: 45.0
+  lambda_adv: 0.0        # Phase 1에서는 GAN 없이
+  lambda_fm: 0.0
+  lambda_content: 5.0    # 콘텐츠 보존 강하게
+  lambda_timbre: 0.0
+  lambda_pitch: 1.0
+
+train:
+  batch_size: 16
+  lr_g: 2.0e-4
+  max_steps: 100000
+  warmup_steps: 2000
+  log_every: 100
+  ckpt_every: 5000
+
+paths:
+  output_dir: "./runs/phase1"
+
+seed: 42

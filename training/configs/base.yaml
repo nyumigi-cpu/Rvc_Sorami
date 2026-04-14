@@ -1,0 +1,53 @@
+# Sorami - Base hyperparameter config
+# 모든 phase가 이 설정을 상속하고 필요한 것만 오버라이드.
+
+model:
+  sample_rate: 24000
+  content_dim: 64
+  timbre_dim: 128
+  hidden_channels: 256
+  n_targets: 1          # 1:1 전용 모델 (타겟 여성 1명)
+  use_pitch: true
+  hop_length: 240       # 24000 / 100fps
+  n_fft: 480
+
+data:
+  segment_seconds: 2.0
+  hop_length: 240
+  augment: true
+  normalize: true
+  extract_pitch: false   # 학습 중 추출 (미리 캐시할 수도 있음)
+  num_workers: 4
+  pin_memory: true
+
+loss:
+  # 손실 가중치 (Phase 2 기본)
+  lambda_mel: 45.0
+  lambda_adv: 1.0
+  lambda_fm: 2.0         # feature matching
+  lambda_content: 2.0    # content consistency
+  lambda_timbre: 0.5     # timbre contrastive
+  lambda_pitch: 1.0
+
+train:
+  batch_size: 16
+  grad_clip: 1.0
+  optimizer: adamw
+  lr_g: 2.0e-4
+  lr_d: 2.0e-4
+  betas: [0.8, 0.99]
+  weight_decay: 0.01
+  # 스케줄러 (exponential decay, HiFi-GAN 스타일)
+  lr_decay: 0.999
+  max_steps: 400000
+  warmup_steps: 2000
+  log_every: 100
+  ckpt_every: 5000
+  eval_every: 2000
+
+paths:
+  data_root: "./data"
+  output_dir: "./runs/phase2"
+  teacher_ckpt: null    # Phase 1에서 사용
+
+seed: 42

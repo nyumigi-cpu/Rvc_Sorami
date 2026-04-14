@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg-info/
+.pytest_cache/
+
+# 학습 결과 & 데이터
+runs/
+checkpoints/
+/data/
+onnx_out/
+*.pt
+*.pth
+*.onnx
+!tools/colab_*.ipynb
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 에디터
+.vscode/
+.idea/
+*.swp
+
+# 환경
+venv/
+.env

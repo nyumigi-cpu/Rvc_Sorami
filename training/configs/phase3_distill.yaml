@@ -1,0 +1,45 @@
+# Phase 3: 경량화 & 스트리밍 증류
+# 목표: Phase 2 모델(Teacher) → 극경량 스트리밍 모델(Student)
+# LLVC 방식: 대형 모델의 출력을 타겟으로 student가 모방
+
+model:
+  sample_rate: 24000
+  # Student는 더 작은 모델
+  content_dim: 48
+  timbre_dim: 96
+  hidden_channels: 192
+  n_targets: 1
+  use_pitch: true
+
+teacher:
+  ckpt: "./runs/phase2/best.pt"
+  # Teacher는 freeze, student만 학습
+  freeze: true
+
+data:
+  root: "./data/training_pool"   # 다양한 남성 음성 (변환 전)
+  segment_seconds: 2.0
+  augment: true
+
+loss:
+  # Teacher의 출력을 student가 따라가도록
+  lambda_mel: 45.0
+  lambda_adv: 0.5
+  lambda_fm: 2.0
+  lambda_content: 5.0     # student content feature도 teacher와 매칭
+  lambda_wav_l1: 10.0     # Student의 출력 파형이 teacher와 직접 비슷해지도록
+  lambda_pitch: 0.5
+
+train:
+  batch_size: 24
+  lr_g: 1.0e-4
+  lr_d: 1.0e-4
+  max_steps: 200000
+  warmup_steps: 1000
+  log_every: 100
+  ckpt_every: 5000
+
+paths:
+  output_dir: "./runs/phase3"
+
+seed: 42
